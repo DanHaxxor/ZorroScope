@@ -1,4 +1,25 @@
 (() => {
+    const SIGNS = {
+        aries: { name: 'Aries', symbol: '♈', archetype: 'The Closer', tagline: 'Decisive. Action-driven. First to move.', reading: "Mars accelerates your pipeline this week. A prospect you'd written off in March is set to re-engage — move first. Opportunity rewards the prepared, not the perfect.", luckyModule: 'Zoho CRM — Leads', powerColor: 'Zoho Red', beware: 'Endless threads in place of decisions' },
+        taurus: { name: 'Taurus', symbol: '♉', archetype: 'The Ledger', tagline: 'Steady. Methodical. Built for the long quarter.', reading: "Venus rewards the reconciliation. Numbers that didn't square last quarter find their match this week. Don't skip the audit — disciplined books compound into clean forecasts.", luckyModule: 'Zoho Books', powerColor: 'Field Olive', beware: 'Quiet scope creep' },
+        gemini: { name: 'Gemini', symbol: '♊', archetype: 'The Integrator', tagline: 'Connective. Communicative. Fluent across systems.', reading: "Mercury opens three new lanes at once. A handoff between two tools you've never bridged reclaims half a workday. Document the connection before you forget you built it.", luckyModule: 'Zoho Flow', powerColor: 'Zoho Yellow', beware: 'Half-finished automations' },
+        cancer: { name: 'Cancer', symbol: '♋', archetype: 'The Helpdesk', tagline: 'Attentive. Supportive. The reason your team feels heard.', reading: "The Moon waxes empathetic. A teammate will ask for 'just a quick thing' — answer, but pair the answer with a doc. Your real leverage is teaching, not triage.", luckyModule: 'Zoho Desk', powerColor: 'Pearl Ivory', beware: 'Quiet burnout' },
+        leo: { name: 'Leo', symbol: '♌', archetype: 'The Dashboard', tagline: "Visible. Confident. The team's clearest signal.", reading: "The Sun rises on your KPIs. A metric you've been quietly improving surfaces in a meeting you weren't expecting to attend. Have the chart ready.", luckyModule: 'Zoho Analytics', powerColor: 'Zoho Amber', beware: 'Vanity metrics' },
+        virgo: { name: 'Virgo', symbol: '♍', archetype: 'The Workflow', tagline: 'Meticulous. Optimizing. Allergic to manual steps.', reading: "Mercury aligns your Deluge logic. The bug isn't in your code — it's in an input you assumed was clean. Write the validator now; you'll thank yourself by Thursday.", luckyModule: 'Zoho Creator', powerColor: 'Sage Olive', beware: 'Over-engineering' },
+        libra: { name: 'Libra', symbol: '♎', archetype: 'The Mediator', tagline: 'Balanced. Diplomatic. The reason the project still ships.', reading: "Venus restores the project plan. Two stakeholders who disagreed in February will both quote your summary this week. Stay neutral — that is the leverage.", luckyModule: 'Zoho Projects', powerColor: 'Quartz Pink', beware: 'Decision paralysis' },
+        scorpio: { name: 'Scorpio', symbol: '♏', archetype: 'The Pipeline', tagline: 'Focused. Strategic. Knows exactly what is in stage four.', reading: "Pluto stirs the bottom of your pipeline. A deal everyone forgot about advances two stages in a single week. Don't celebrate before the e-signature clears.", luckyModule: 'Zoho CRM — Deals', powerColor: 'Deep Plum', beware: 'Premature forecasts' },
+        sagittarius: { name: 'Sagittarius', symbol: '♐', archetype: 'The Campaign', tagline: 'Bold. Broadcasting. Sharper instincts on subject lines.', reading: "Jupiter expands your open rate. The audience segment you nearly skipped is the one that converts. Send the bolder draft — your hesitation is the only A/B loser.", luckyModule: 'Zoho Campaigns', powerColor: 'Cobalt Indigo', beware: 'Audience fatigue' },
+        capricorn: { name: 'Capricorn', symbol: '♑', archetype: 'The Roadmap', tagline: 'Ambitious. Structured. Already drafting next quarter.', reading: "Saturn solidifies your sprint. A long-term goal you set quietly last year is closer than the dashboard suggests. Mark the milestone — the next one starts Monday.", luckyModule: 'Zoho Sprints', powerColor: 'Forest Green', beware: 'Postponed rest' },
+        aquarius: { name: 'Aquarius', symbol: '♒', archetype: 'The Innovator', tagline: 'Visionary. Inventive. Builds it before the brief lands.', reading: "Uranus electrifies your sandbox. A side project nobody understood will solve a real problem within thirty days. Demo it before someone else builds the lesser version.", luckyModule: 'Zoho Catalyst', powerColor: 'Zoho Cyan', beware: 'Scope-less experiments' },
+        pisces: { name: 'Pisces', symbol: '♓', archetype: 'The Inbox', tagline: 'Intuitive. Empathic. Finds the one message that mattered.', reading: "Neptune softens your inbox. A reply you forgot to send is exactly what someone needs today — find it, send it, no apology required. Flow over hustle this week.", luckyModule: 'Zoho Mail', powerColor: 'Zoho Blue', beware: 'Overthinking the draft' },
+    };
+
+    const Q1 = { A: ['cancer', 'pisces', 'virgo'], B: ['leo', 'capricorn', 'scorpio'], C: ['gemini', 'libra', 'sagittarius'], D: ['aries', 'aquarius', 'taurus'] };
+    const Q2 = { A: ['virgo', 'aquarius', 'capricorn'], B: ['aries', 'scorpio', 'sagittarius'], C: ['cancer', 'libra', 'pisces'], D: ['leo', 'taurus', 'gemini'] };
+    const Q3 = { A: ['aries', 'leo', 'sagittarius'], B: ['pisces', 'libra', 'taurus'], C: ['virgo', 'capricorn', 'scorpio'], D: ['gemini', 'cancer', 'aquarius'] };
+
+    const SIGN_ORDER = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
+
     const MATCH_URL = (() => {
         const host = globalThis.location?.hostname || '';
         if (host === 'localhost' || host.startsWith('127.') || host === '') {
@@ -8,8 +29,34 @@
         const base = isDev
             ? 'https://zorroscope-854436641.development.catalystserverless.com'
             : 'https://zorroscope-854436641.catalystserverless.com';
-        return `${base}/server/match/execute`;
+        return `${base}/server/match/`;
     })();
+
+    const fetchAggregate = async (logSign) => {
+        // Single GET: ?sign=<key> logs and returns updated counts; no param = read-only.
+        // Using GET avoids the CORS preflight that Catalyst's gateway doesn't add headers to.
+        try {
+            const url = logSign ? `${MATCH_URL}?sign=${encodeURIComponent(logSign)}` : MATCH_URL;
+            const res = await fetch(url, { method: 'GET' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const { counts } = await res.json();
+            return counts || {};
+        } catch (err) {
+            console.warn('fetchAggregate failed:', err);
+            return null;
+        }
+    };
+
+    const computeSign = ({ q1, q2, q3 }) => {
+        const scores = Object.fromEntries(Object.keys(SIGNS).map((s) => [s, 0]));
+        [Q1[q1], Q2[q2], Q3[q3]].forEach((group) => {
+            if (group) group.forEach((s) => { scores[s]++; });
+        });
+        const max = Math.max(...Object.values(scores));
+        const winners = Object.keys(scores).filter((s) => scores[s] === max);
+        const key = winners[Math.floor(Math.random() * winners.length)];
+        return { key, ...SIGNS[key] };
+    };
 
     const screens = document.querySelectorAll('[data-screen]');
     const answers = { q1: null, q2: null, q3: null };
@@ -40,25 +87,8 @@
 
     const fetchScope = async () => {
         show('loading');
-        const params = new URLSearchParams(answers);
-
-        // Ensure loading state shows for at least a beat — feels more "cosmic"
-        const minDelay = new Promise((r) => setTimeout(r, 1100));
-
-        try {
-            const fetchPromise = fetch(`${MATCH_URL}?${params.toString()}`, {
-                method: 'GET',
-                headers: { Accept: 'application/json, text/plain' },
-            });
-            const [res] = await Promise.all([fetchPromise, minDelay]);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const text = await res.text();
-            const data = JSON.parse(text);
-            renderResult(data);
-        } catch (err) {
-            console.error('ZorroScope fetch failed:', err);
-            show('error');
-        }
+        await new Promise((r) => setTimeout(r, 1100));
+        renderResult(computeSign(answers));
     };
 
     const renderResult = (data) => {
@@ -87,6 +117,54 @@
         requestAnimationFrame(() => {
             document.body.classList.add('is-result-revealed');
         });
+
+        // Log this result and refresh the population chart in one call
+        renderChart(data.key);
+    };
+
+    const renderChart = async (highlightKey) => {
+        const container = document.querySelector('[data-chart="population"]');
+        if (!container) return;
+
+        container.classList.add('is-loading');
+        // Pass the key so the server logs this result and returns the post-increment counts
+        const counts = await fetchAggregate(highlightKey);
+        container.classList.remove('is-loading');
+
+        if (!counts) {
+            container.classList.add('is-empty');
+            return;
+        }
+
+        // Server already incremented this user's sign and returned post-write counts; no local bump needed
+        const total = SIGN_ORDER.reduce((sum, s) => sum + (counts[s] || 0), 0);
+        if (total === 0) {
+            container.classList.add('is-empty');
+            return;
+        }
+        container.classList.remove('is-empty');
+
+        // Sort by count desc, stable by SIGN_ORDER
+        const ordered = SIGN_ORDER
+            .map((s) => ({ key: s, count: counts[s] || 0 }))
+            .sort((a, b) => b.count - a.count || SIGN_ORDER.indexOf(a.key) - SIGN_ORDER.indexOf(b.key));
+
+        const max = ordered[0].count || 1;
+
+        container.innerHTML = ordered.map(({ key, count }) => {
+            const pct = Math.round((count / max) * 100);
+            const share = total > 0 ? Math.round((count / total) * 100) : 0;
+            const sign = SIGNS[key];
+            const isYou = key === highlightKey;
+            return `
+                <div class="chart-row${isYou ? ' is-you' : ''}" data-sign="${key}">
+                    <span class="chart-row__symbol" aria-hidden="true">${sign.symbol}</span>
+                    <span class="chart-row__name">${sign.name}</span>
+                    <span class="chart-row__bar"><span class="chart-row__fill" style="--w:${pct}%"></span></span>
+                    <span class="chart-row__count">${share}%</span>
+                </div>
+            `;
+        }).join('');
     };
 
     // Best-effort color name extraction for the meta swatch.

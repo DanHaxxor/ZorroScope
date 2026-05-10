@@ -2,8 +2,9 @@
 	"deployment": {
 		"name": "match",
 		"stack": "node18",
-		"type": "basicio",
-		"env_variables": {}
+		"type": "advancedio",
+		"env_variables": {},
+		"memory": 256
 	},
 	"execution": {
 		"main": "index.js"

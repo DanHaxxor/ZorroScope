@@ -1164,6 +1164,150 @@ body.is-result-revealed .tarot { animation: card-reveal 0.7s var(--ease) both; }
 }
 
 /* =====================================================================
+   Population chart — live aggregate of sign distribution
+   ===================================================================== */
+.tarot__chart {
+    margin: 22px -2px 4px;
+    padding: 18px 18px 16px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(0,0,0,0.10));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    text-align: left;
+    animation: stagger-in 0.6s var(--ease) 1.05s both;
+}
+
+.chart__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 17px;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    margin-bottom: 4px;
+}
+
+.chart__caption {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 14px;
+    font-weight: 500;
+}
+
+.chart {
+    display: grid;
+    gap: 6px;
+    min-height: 60px;
+}
+
+.chart.is-loading::after,
+.chart.is-empty::after {
+    content: "Reading the cosmos…";
+    display: block;
+    text-align: center;
+    padding: 14px 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-faint);
+}
+
+.chart.is-empty::after {
+    content: "No readings yet — you're first.";
+}
+
+.chart-row {
+    display: grid;
+    grid-template-columns: 22px 1fr 1.4fr 38px;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    transition: color 0.25s var(--ease);
+}
+
+.chart-row__symbol {
+    font-size: 14px;
+    color: var(--ink-faint);
+    text-align: center;
+    line-height: 1;
+}
+
+.chart-row__name {
+    font-family: var(--font-ui);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.chart-row__bar {
+    position: relative;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.chart-row__fill {
+    position: absolute;
+    inset: 0;
+    width: var(--w, 0%);
+    background: linear-gradient(90deg, rgba(var(--glow), 0.35), rgba(var(--aura), 0.6));
+    border-radius: inherit;
+    transform-origin: left center;
+    animation: chart-fill 0.7s var(--ease) both;
+}
+
+@keyframes chart-fill {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+.chart-row__count {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.chart-row.is-you {
+    position: relative;
+    isolation: isolate;
+    color: var(--ink);
+}
+
+.chart-row.is-you .chart-row__symbol,
+.chart-row.is-you .chart-row__count {
+    color: var(--gold);
+}
+
+.chart-row.is-you .chart-row__fill {
+    background: linear-gradient(90deg, var(--gold), var(--accent-warm));
+    box-shadow: 0 0 8px rgba(var(--glow), 0.4);
+}
+
+.chart-row.is-you::before {
+    content: "";
+    position: absolute;
+    inset: -2px -6px;
+    border-radius: 6px;
+    background: rgba(var(--glow), 0.04);
+    z-index: -1;
+}
+
+@media (max-width: 480px) {
+    .tarot__chart { padding: 14px 14px 12px; }
+    .chart-row { grid-template-columns: 20px 1fr 1.2fr 34px; gap: 8px; font-size: 12px; }
+    .chart__title { font-size: 16px; }
+}
+
+/* =====================================================================
    Poof — cosmic particle burst on button press
    ===================================================================== */
 .poof {

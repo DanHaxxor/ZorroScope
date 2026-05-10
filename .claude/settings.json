@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(catalyst --version)"
+      "Bash(catalyst --version)",
+      "WebFetch(domain:docs.catalyst.zoho.com)",
+      "Bash(npm install *)"
     ]
   }
 }
