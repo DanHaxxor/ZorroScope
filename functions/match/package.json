@@ -1,0 +1,9 @@
+{
+	"name": "match",
+	"version": "1.0.0",
+	"main": "index.js",
+	"author": "daniel.g+creator@zohotest.com",
+	"dependencies": {
+		"zcatalyst-sdk-node": "latest"
+	}
+}

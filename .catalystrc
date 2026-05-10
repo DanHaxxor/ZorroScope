@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "24095000000196007",
+      "name": "ZorroScope",
+      "domain": {
+        "id": "10125419003",
+        "name": "zorroscope-854436641.development"
+      },
+      "timezone": "America/Chicago",
+      "env": [
+        {
+          "idx": 1,
+          "id": "854436641",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}

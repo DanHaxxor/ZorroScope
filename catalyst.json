@@ -1,0 +1,15 @@
+{
+  "functions": {
+    "targets": [
+      "match"
+    ],
+    "ignore": [],
+    "source": "functions"
+  },
+  "slate": [
+    {
+      "name": "zorroscope",
+      "source": "/Users/danielgonzales/Desktop/ZorroScope/zorroscope"
+    }
+  ]
+}
