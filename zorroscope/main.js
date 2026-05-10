@@ -20,17 +20,10 @@
 
     const SIGN_ORDER = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
 
-    const MATCH_URL = (() => {
-        const host = globalThis.location?.hostname || '';
-        if (host === 'localhost' || host.startsWith('127.') || host === '') {
-            return '/server/match/';
-        }
-        const isDev = host.includes('development') || host.includes('.dev.');
-        const base = isDev
-            ? 'https://zorroscope-854436641.development.catalystserverless.com'
-            : 'https://zorroscope-854436641.catalystserverless.com';
-        return `${base}/server/match/`;
-    })();
+    // Chart backend lives only in the dev Catalyst environment for now.
+    // Prod Slate calls the dev function URL directly — CORS is wildcard so origin doesn't matter.
+    // Swap to the prod URL once the Advanced I/O function is promoted to production.
+    const MATCH_URL = 'https://zorroscope-854436641.development.catalystserverless.com/server/match/';
 
     const fetchAggregate = async (logSign) => {
         // Single GET: ?sign=<key> logs and returns updated counts; no param = read-only.
