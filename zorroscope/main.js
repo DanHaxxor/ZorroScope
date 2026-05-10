@@ -1,5 +1,15 @@
 (() => {
-    const MATCH_URL = '/server/match/';
+    const MATCH_URL = (() => {
+        const host = globalThis.location?.hostname || '';
+        if (host === 'localhost' || host.startsWith('127.') || host === '') {
+            return '/server/match/';
+        }
+        const isDev = host.includes('development') || host.includes('.dev.');
+        const base = isDev
+            ? 'https://zorroscope-854436641.development.catalystserverless.com'
+            : 'https://zorroscope-854436641.catalystserverless.com';
+        return `${base}/server/match/execute`;
+    })();
 
     const screens = document.querySelectorAll('[data-screen]');
     const answers = { q1: null, q2: null, q3: null };
